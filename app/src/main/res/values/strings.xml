@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Resultant-Test</string>
+    <string name="Refresh">refresh</string>
+    <string name="connection_error">Connection error</string>
+    <string name="amount">Amount</string>
+    <string name="volume">Volume</string>
+    <string name="name">Name</string>
+</resources>
