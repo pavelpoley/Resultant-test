@@ -1,6 +1,7 @@
 package com.pavelpoley.resultant_test.network;
 
-import retrofit2.Call;
+import io.reactivex.Single;
+import retrofit2.Response;
 import retrofit2.http.GET;
 
 public interface StocksApi {
@@ -9,5 +10,5 @@ public interface StocksApi {
      * GET request, requests for list of stocks
      */
     @GET("stocks.json")
-    Call<StockResult> getStocks();
+    public Single<Response<StockResult>> getStocks();
 }

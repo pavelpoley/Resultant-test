@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.pavelpoley.resultant_test.common.FormatUtils;
 import com.pavelpoley.resultant_test.R;
+import com.pavelpoley.resultant_test.common.FormatUtils;
 import com.pavelpoley.resultant_test.model.Stock;
 
 import java.util.ArrayList;

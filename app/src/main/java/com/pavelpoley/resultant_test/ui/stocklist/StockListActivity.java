@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -15,18 +14,20 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.pavelpoley.resultant_test.R;
+import com.pavelpoley.resultant_test.di.modules.ViewModelModule;
 import com.pavelpoley.resultant_test.model.Stock;
-import com.pavelpoley.resultant_test.network.RetrofitFactory;
-import com.pavelpoley.resultant_test.network.StocksApi;
+import com.pavelpoley.resultant_test.ui.base.BaseActivity;
 
 import java.util.List;
 
+import javax.inject.Inject;
 
-public class StockListActivity extends AppCompatActivity {
+
+public class StockListActivity extends BaseActivity {
 
     private static final String TAG = "StockListActivity";
 
-    private final static int REFRESH_INTERVAL = 15000;
+    private final static int REFRESH_INTERVAL = 3000;
 
     private StockListAdapter adapter;
 
@@ -42,7 +43,7 @@ public class StockListActivity extends AppCompatActivity {
     private Observer<List<Stock>> dataObserver = getDataObserver();
     private Observer<String> errorObserver = getErrorObserver();
 
-    private StocksApi stocksApi = RetrofitFactory.get();
+    @Inject StockListViewModelFactory stockListViewModelFactory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +53,15 @@ public class StockListActivity extends AppCompatActivity {
         initProgressBar();
         initRecycleView();
 
+
+        //inject component
+        getApplicationComponent().getStockListActivityComponent(new ViewModelModule()).inject(this);
+
+
+
         //init viewModel
         stockListViewModel = ViewModelProviders
-                .of(this, new StockListViewModelFactory(stocksApi))
+                .of(this, stockListViewModelFactory)
                 .get(StockListViewModel.class);
 
 

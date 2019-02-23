@@ -2,7 +2,6 @@ package com.pavelpoley.resultant_test.ui.stocklist;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.support.annotation.NonNull;
 
 import com.pavelpoley.resultant_test.common.SingleLiveEvent;
 import com.pavelpoley.resultant_test.model.Stock;
@@ -11,22 +10,24 @@ import com.pavelpoley.resultant_test.network.StocksApi;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
 /**
  * ViewModel for StockListActivity
- * */
+ */
 public class StockListViewModel extends ViewModel {
 
     private static final String TAG = "StockListViewModel";
 
-    MutableLiveData<List<Stock>> stocksLiveData = new MutableLiveData<>();
-    SingleLiveEvent<String> errorEvent = new SingleLiveEvent<>();
+    public MutableLiveData<List<Stock>> stocksLiveData = new MutableLiveData<>();
+    public SingleLiveEvent<String> errorEvent = new SingleLiveEvent<>();
 
     private StocksApi stocksApi;
 
+    private CompositeDisposable bag = new CompositeDisposable();
 
     public StockListViewModel(StocksApi stocksApi) {
         this.stocksApi = stocksApi;
@@ -34,35 +35,35 @@ public class StockListViewModel extends ViewModel {
 
 
     //Get stocks list, notifies the activity when data received or when there is an error
-    void getStocksList() {
+    public void getStocksList() {
 
-        stocksApi.getStocks().enqueue(new Callback<StockResult>() {
+        bag.add(stocksApi.getStocks()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::handleResult, error -> showErrorMessage(error.getMessage())));
 
-            @Override
-            public void onResponse(@NonNull Call<StockResult> call, @NonNull Response<StockResult> response) {
-
-                if (response.isSuccessful()) {
-
-                    if (response.body() != null) {
-                        //notify activity with new values
-                        stocksLiveData.setValue(response.body().getStock());
-                    }
-
-                } else {
-                    showErrorMessage();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<StockResult> call, @NonNull Throwable t) {
-                showErrorMessage();
-            }
-        });
 
     }
 
-    private void showErrorMessage() {
-        errorEvent.setValue("");
+    private void handleResult(Response<StockResult> result) {
+        if (result.isSuccessful()) {
+
+            if (result.body() != null)
+                stocksLiveData.setValue(result.body().getStock());
+
+        } else {
+            showErrorMessage("Error accrued");
+        }
     }
 
+    private void showErrorMessage(String msg) {
+        errorEvent.setValue(msg);
+    }
+
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        bag.clear();
+    }
 }
