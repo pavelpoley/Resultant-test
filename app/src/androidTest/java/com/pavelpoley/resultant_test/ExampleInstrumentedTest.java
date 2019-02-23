@@ -68,7 +68,7 @@ public class ExampleInstrumentedTest {
             }
         });
 
-        sut.errorEvent.observeForever(new Observer<String>() {
+        sut.errorLiveDataEvent.observeForever(new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 MatcherAssert.assertThat(s,CoreMatchers.is("test error"));

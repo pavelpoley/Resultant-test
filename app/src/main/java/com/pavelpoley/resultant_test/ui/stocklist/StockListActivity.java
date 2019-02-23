@@ -69,7 +69,7 @@ public class StockListActivity extends BaseActivity {
         stockListViewModel.stocksLiveData.observe(this, dataObserver);
 
         //observes for connection error
-        stockListViewModel.errorEvent.observe(this, errorObserver);
+        stockListViewModel.errorLiveDataEvent.observe(this, errorObserver);
     }
 
 

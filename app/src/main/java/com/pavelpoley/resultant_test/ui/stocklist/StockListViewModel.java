@@ -23,7 +23,7 @@ public class StockListViewModel extends ViewModel {
     private static final String TAG = "StockListViewModel";
 
     public MutableLiveData<List<Stock>> stocksLiveData = new MutableLiveData<>();
-    public SingleLiveEvent<String> errorEvent = new SingleLiveEvent<>();
+    public SingleLiveEvent<String> errorLiveDataEvent = new SingleLiveEvent<>();
 
     private StocksApi stocksApi;
 
@@ -40,7 +40,7 @@ public class StockListViewModel extends ViewModel {
         bag.add(stocksApi.getStocks()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::handleResult, error -> showErrorMessage(error.getMessage())));
+                .subscribe(this::handleResult, error -> onError(error.getMessage())));
 
 
     }
@@ -52,12 +52,12 @@ public class StockListViewModel extends ViewModel {
                 stocksLiveData.setValue(result.body().getStock());
 
         } else {
-            showErrorMessage("Error accrued");
+            onError("Error accrued");
         }
     }
 
-    private void showErrorMessage(String msg) {
-        errorEvent.setValue(msg);
+    private void onError(String msg) {
+        errorLiveDataEvent.setValue(msg);
     }
 
 
