@@ -6,7 +6,7 @@ import android.arch.lifecycle.ViewModel;
 import com.pavelpoley.resultant_test.common.SingleLiveEvent;
 import com.pavelpoley.resultant_test.model.Stock;
 import com.pavelpoley.resultant_test.network.StockResult;
-import com.pavelpoley.resultant_test.network.StocksApi;
+import com.pavelpoley.resultant_test.network.StocksRepository;
 
 import java.util.List;
 
@@ -25,41 +25,47 @@ public class StockListViewModel extends ViewModel {
     public MutableLiveData<List<Stock>> stocksLiveData = new MutableLiveData<>();
     public SingleLiveEvent<String> errorLiveDataEvent = new SingleLiveEvent<>();
 
-    private StocksApi stocksApi;
+    private StocksRepository stocksRepository;
 
     private CompositeDisposable bag = new CompositeDisposable();
 
-    public StockListViewModel(StocksApi stocksApi) {
-        this.stocksApi = stocksApi;
+
+    public class State{
+       boolean isLoading = false;
+       List<Stock> stockList = null;
+    }
+
+    public StockListViewModel(StocksRepository stocksApi) {
+        this.stocksRepository = stocksApi;
     }
 
 
     //Get stocks list, notifies the activity when data received or when there is an error
     public void getStocksList() {
 
-        bag.add(stocksApi.getStocks()
+        bag.add(stocksRepository.getStockList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::handleResult, error -> onError(error.getMessage())));
-
 
     }
 
     private void handleResult(Response<StockResult> result) {
         if (result.isSuccessful()) {
 
-            if (result.body() != null)
-                stocksLiveData.setValue(result.body().getStock());
+            StockResult body = result.body();
+
+            if (body != null)
+                stocksLiveData.setValue(body.getStock());
 
         } else {
-            onError("Error accrued");
+            onError("Connection error");
         }
     }
 
     private void onError(String msg) {
         errorLiveDataEvent.setValue(msg);
     }
-
 
     @Override
     protected void onCleared() {

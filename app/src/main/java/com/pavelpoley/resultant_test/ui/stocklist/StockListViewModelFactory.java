@@ -4,22 +4,22 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
-import com.pavelpoley.resultant_test.network.StocksApi;
+import com.pavelpoley.resultant_test.network.StocksRepository;
 
 /**
  * Factory for StockListViewModel
  */
 public class StockListViewModelFactory implements ViewModelProvider.Factory {
 
-    private StocksApi stocksApi;
+    private StocksRepository stocksRepository;
 
-    public StockListViewModelFactory(StocksApi stocksApi) {
-        this.stocksApi = stocksApi;
+    public StockListViewModelFactory(StocksRepository stocksApi) {
+        this.stocksRepository = stocksApi;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new StockListViewModel(stocksApi);
+        return (T) new StockListViewModel(stocksRepository);
     }
 }

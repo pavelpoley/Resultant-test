@@ -2,6 +2,7 @@ package com.pavelpoley.resultant_test.di.modules;
 
 import com.pavelpoley.resultant_test.Config;
 import com.pavelpoley.resultant_test.network.StocksApi;
+import com.pavelpoley.resultant_test.network.StocksRepository;
 
 import javax.inject.Singleton;
 
@@ -33,4 +34,7 @@ public class RetrofitModule {
                 .build();
     }
 
+    StocksRepository getStockRepository(StocksApi stocksApi){
+        return new StocksRepository(stocksApi);
+    }
 }
