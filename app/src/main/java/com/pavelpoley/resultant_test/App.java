@@ -11,6 +11,7 @@ public class App extends Application {
     private ApplicationComponent applicationComponent;
 
     //test1
+    //test2
 
     @Override
     public void onCreate() {
