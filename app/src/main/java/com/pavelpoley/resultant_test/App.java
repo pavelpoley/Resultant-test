@@ -12,6 +12,7 @@ public class App extends Application {
 
     //test1
     //test2
+    //test3
 
     @Override
     public void onCreate() {
